@@ -13,7 +13,7 @@ COPY prisma ./prisma
 RUN npm run db:generate
 
 COPY apps/web ./apps/web
-RUN npm run build
+RUN mkdir -p /app/apps/web/public && npm run build
 
 FROM node:20-slim
 WORKDIR /app
@@ -24,7 +24,7 @@ ENV NODE_ENV=production
 
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/apps/web/.next ./apps/web/.next
-COPY --from=builder /app/apps/web/public ./apps/web/public
+COPY --from=builder /app/apps/web/public ./apps/web/public || true
 COPY --from=builder /app/apps/web/package.json ./apps/web/package.json
 COPY --from=builder /app/apps/web/next.config.js ./apps/web/next.config.js
 COPY --from=builder /app/package.json ./
